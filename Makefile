@@ -4,7 +4,8 @@ default:
 .PHONY: install-dev
 install-dev:
 	pip install -U pip setuptools
-	pip install -U "black==22.3.0" "isort>=5.0,<6.0" "flake8>=5.0,<6.0" mypy pytest pytest-cov
+	pip install -U "black==22.3.0" "isort>=5.0,<6.0" "flake8>=5.0,<6.0" mypy pytest pytest-cov \
+		types-requests types-tqdm
 	pip install -e .
 
 .PHONY: black
