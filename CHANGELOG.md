@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.2](https://www.github.com/bihealth/gene-ranking-shootout/compare/v0.1.1...v0.1.2) (2023-05-05)
+
+
+### Documentation
+
+* fixing README in setup.cfg, adding PyPi badges ([#15](https://www.github.com/bihealth/gene-ranking-shootout/issues/15)) ([16d4f32](https://www.github.com/bihealth/gene-ranking-shootout/commit/16d4f32b94195a85df06ad6bddb85a6381c33bfe))
+
 ### [0.1.1](https://www.github.com/bihealth/gene-ranking-shootout/compare/v0.1.0...v0.1.1) (2023-05-05)
 
 
