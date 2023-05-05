@@ -26,7 +26,9 @@ class BarPrinter:
 
     def print(self, results: typing.List[models.Result]):
         ranks = [result.rank for result in results]
-        above_bars_top_n = len([rank for rank in ranks if rank is not None and rank > self.bars_top_n])
+        above_bars_top_n = len(
+            [rank for rank in ranks if rank is not None and rank > self.bars_top_n]
+        )
         missing = len([rank for rank in ranks if rank is None])
         counter = Counter(ranks)
         tot_width = self.total_width - 14
