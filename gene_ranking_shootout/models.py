@@ -2,6 +2,7 @@
 
 import csv
 import json
+import pathlib
 import typing
 
 import attrs
@@ -49,3 +50,20 @@ def load_gnomad_counts_tsv(path):
     with open(path, "rt") as f:
         reader = csv.DictReader(f, delimiter="\t")
         return [GnomadCounts(**row) for row in reader]
+
+
+def load_gnomad_counts():
+    """Helper to load the gnomad counts from the data directory."""
+    return load_gnomad_counts_tsv(pathlib.Path(__file__).parent / "data" / "gnomad_counts.tsv")
+
+
+@attrs.frozen()
+class Result:
+    """Stores prioritization results."""
+
+    #: The case that was run.
+    case: Case
+    #: The rank that the disease gene was assigned.
+    rank: int
+    #: The resulting ranked genes as Entrez IDs.
+    result_entrez_ids: typing.List[str]

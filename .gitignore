@@ -1,5 +1,6 @@
 *~
 .*.sw?
+out/
 
 # Data files
 /*.tsv
