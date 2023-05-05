@@ -179,3 +179,13 @@ The call to `gene-ranking-shootout dataset convert-tsv` should be as follows.
 
 ```bash
 $ gene-ranking-shootout dataset convert-tsv input.tsv output.json
+```
+
+## Some Preliminary Results
+
+The following was generated on 2023/05/05 with all 4714 cases.
+
+```
+$ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize $f); echo; done
+TODO
+```
