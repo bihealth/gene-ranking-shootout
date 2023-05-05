@@ -189,10 +189,107 @@ The following was generated on 2023/05/05 with all 4714 cases.
 
 ```
 $ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize --bars-top-n 20 $f); echo; done
-TODO: MISSING - CADA
-TODO: MISSING - AMELIE
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive-human.json
+    1: 2593  ####################################
+    2:  637  ########
+    3:  375  #####
+    4:  203  ##
+    5:  132  #
+    6:  104  #
+    7:   99  #
+    8:   80  #
+    9:   61  .
+   10:   46  .
+   11:   44  .
+   12:   30  .
+   13:   30  .
+   14:   30  .
+   15:   15  .
+   16:   22  .
+   17:   12  .
+   18:   11  .
+   19:   13  .
+   20:   10  .
 
-+ gene-ranking-shootout benchmark summarize --bars-top-n 20 /tmp/result-phen2gene.json
+21-..:  149  ##
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive.json
+    1: 2418  #################################
+    2:  686  #########
+    3:  355  ####
+    4:  226  ###
+    5:  155  ##
+    6:  122  #
+    7:   86  #
+    8:   95  #
+    9:   54  .
+   10:   54  .
+   11:   52  .
+   12:   28  .
+   13:   29  .
+   14:   27  .
+   15:   16  .
+   16:   11  .
+   17:   23  .
+   18:    9  .
+   19:   10  .
+   20:   14  .
+
+21-..:  226  ###
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive-mouse.json
+    1: 2418  #################################
+    2:  685  #########
+    3:  357  #####
+    4:  227  ###
+    5:  160  ##
+    6:  121  #
+    7:   90  #
+    8:   96  #
+    9:   55  .
+   10:   56  .
+   11:   58  .
+   12:   37  .
+   13:   31  .
+   14:   26  .
+   15:   22  .
+   16:   18  .
+   17:   26  .
+   18:   19  .
+   19:   14  .
+   20:   15  .
+
+21-..:  165  ##
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-phive.json
+    1:  934  #############
+    2:  298  ####
+    3:  163  ##
+    4:  101  #
+    5:   50  .
+    6:   44  .
+    7:   30  .
+    8:   33  .
+    9:   16  .
+   10:   16  .
+   11:   10  .
+   12:    9  .
+   13:   17  .
+   14:   13  .
+   15:   12  .
+   16:   16  .
+   17:   14  .
+   18:   23  .
+   19:   28  .
+   20:   33  .
+
+21-..: 2836  #######################################
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-phen2gene.json
     1: 2426  ##################################
     2:  470  ######
     3:  209  ##
@@ -215,9 +312,9 @@ TODO: MISSING - AMELIE
    20:   19  .
 
 21-..:  763  ##########
-mssng:    0
+mssng:    0  
 
-+ gene-ranking-shootout benchmark summarize --bars-top-n 20 /tmp/result-varfish-phenix.json
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-varfish-phenix.json
     1: 1709  #######################
     2:  616  ########
     3:  357  ####
@@ -240,5 +337,5 @@ mssng:    0
    20:   48  .
 
 21-..:  403  #####
-mssng:    0
+mssng:    0  
 ```
