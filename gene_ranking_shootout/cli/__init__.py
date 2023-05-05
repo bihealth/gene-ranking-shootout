@@ -72,6 +72,18 @@ def amelie(simulated_json, results_json, bars_top_n, total_width):
     )
 
 
+@benchmark.command()
+@click.option("--bars-top-n", default=10)
+@click.option("--total-width", default=80)
+@click.argument("simulated_json")
+@click.argument("results_json")
+def cada(simulated_json, results_json, bars_top_n, total_width):
+    """Benchmark the CADA container."""
+    runner.CadaRunner(bars_top_n=bars_top_n, total_width=total_width).run(
+        simulated_json, results_json
+    )
+
+
 @main.group()
 def dataset():
     """Group for dataset sub commands."""

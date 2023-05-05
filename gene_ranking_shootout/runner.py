@@ -38,7 +38,10 @@ class BarPrinter:
         max_value = max(list(counter.values()) + [missing, above_bars_top_n])
 
         def gen_bar(value):
-            hash_count = int(tot_width / max_value * value)
+            if max_value:
+                hash_count = int(tot_width / max_value * value)
+            else:
+                hash_count = 0
             if value == 0:
                 return ""
             elif hash_count == 0:
@@ -162,8 +165,8 @@ class PhenixVarFishRunner(BaseRunner):
 class Phen2GeneRunner(BaseRunner):
     """Run benchmark for phen2gene.
 
-    The benchmark is run through podman so the shootout must be installed with the option
-    [phen2gene] to enable installation of podman.
+    The benchmark will be run using podman, thus podman must be available
+    on the system.
     """
 
     def __init__(self, *args, **kwargs):
@@ -201,9 +204,9 @@ class Phen2GeneRunner(BaseRunner):
                 "/code/out/genes.txt",
             ]
             try:
-                output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+                subprocess.check_call(cmd, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError:
-                logger.error("Error running phen2gene:\n{}", output.decode("utf-8"))
+                logger.error("Error running phen2gene")
                 return None
 
             # Read the output file.
@@ -256,6 +259,65 @@ class AmelieRunner(BaseRunner):
         result_entrez_ids = []
         for row in response.json():
             result_entrez_ids.append(self.symbol_to_entrez[row[0]])
+
+        # Determine rank for case.
+        try:
+            rank = result_entrez_ids.index(case.disease_gene_id) + 1
+        except ValueError:
+            logger.error("Disease gene {} not found in results?", case.disease_gene_id)
+            return None
+
+        return models.Result(
+            case=case,
+            rank=rank,
+            result_entrez_ids=result_entrez_ids,
+        )
+
+
+class CadaRunner(BaseRunner):
+    """Run benchmark for CADA.
+
+    The benchmark will be run using podman, thus podman must be available
+    on the system.  Further, the custom built container image is assumed.
+    See the README for details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #: The name ofthe image to use via podman.
+        self.image_name = "localhost/cada-for-shootout:latest"
+
+    def run_ranking(self, case: models.Case) -> typing.Optional[models.Result]:
+        result_entrez_ids = []
+
+        # Run CADA with temporary directory.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Run phen2gene using podman.
+            cmd = [
+                "podman",
+                "run",
+                "--rm",
+                "-v",
+                f"{tmpdir}:/data",
+                "-t",
+                self.image_name,
+                "--hpo_terms",
+                ",".join(case.hpo_terms),
+                "--out_dir",
+                "/data",
+            ]
+            try:
+                subprocess.check_call(cmd, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError:
+                logger.error("Error running CADA")
+                return None
+
+            # Read the output file.
+            with open(f"{tmpdir}/result.txt", "rt") as inputf:
+                reader = csv.DictReader(inputf, delimiter="\t")
+                # Translate the gene symbols from the result to entrez ids.
+                for row in reader:
+                    result_entrez_ids.append(row["gene_id"])
 
         # Determine rank for case.
         try:
