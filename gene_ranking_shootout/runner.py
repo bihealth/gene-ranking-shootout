@@ -344,7 +344,7 @@ class ExomiserRunner(BaseRunner):
         prio_algorithm, prio_params = self.algo_params[self.algorithm]
         payload = {
             "prioritiser": prio_algorithm,
-            "prioritiser-params": ",".join(prio_params),
+            "prioritiserParams": ",".join(prio_params),
             "phenotypes": case.hpo_terms,
             "genes": gene_ids,
         }
