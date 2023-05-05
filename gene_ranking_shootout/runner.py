@@ -94,11 +94,7 @@ class BaseRunner:
 
         logger.info("Writing results ...")
         with open(path_results_json, "wt") as outf:
-            json.dump(
-                cattrs.unstructure(results),
-                outf,
-                indent=2,
-            )
+            json.dump(cattrs.unstructure(results), outf, indent=2)
         logger.info("... done writing results")
 
         logger.info("Displaying results overview ...")
@@ -155,11 +151,7 @@ class PhenixVarFishRunner(BaseRunner):
             logger.error("Disease gene {} not found in results?", case.disease_gene_id)
             return None
 
-        return models.Result(
-            case=case,
-            rank=rank,
-            result_entrez_ids=result_entrez_ids,
-        )
+        return models.Result(case=case, rank=rank, result_entrez_ids=result_entrez_ids)
 
 
 class Phen2GeneRunner(BaseRunner):
@@ -223,11 +215,7 @@ class Phen2GeneRunner(BaseRunner):
             logger.error("Disease gene {} not found in results?", case.disease_gene_id)
             return None
 
-        return models.Result(
-            case=case,
-            rank=rank,
-            result_entrez_ids=result_entrez_ids,
-        )
+        return models.Result(case=case, rank=rank, result_entrez_ids=result_entrez_ids)
 
 
 class AmelieRunner(BaseRunner):
@@ -267,11 +255,7 @@ class AmelieRunner(BaseRunner):
             logger.error("Disease gene {} not found in results?", case.disease_gene_id)
             return None
 
-        return models.Result(
-            case=case,
-            rank=rank,
-            result_entrez_ids=result_entrez_ids,
-        )
+        return models.Result(case=case, rank=rank, result_entrez_ids=result_entrez_ids)
 
 
 class CadaRunner(BaseRunner):
@@ -326,8 +310,59 @@ class CadaRunner(BaseRunner):
             logger.error("Disease gene {} not found in results?", case.disease_gene_id)
             return None
 
-        return models.Result(
-            case=case,
-            rank=rank,
-            result_entrez_ids=result_entrez_ids,
-        )
+        return models.Result(case=case, rank=rank, result_entrez_ids=result_entrez_ids)
+
+
+class ExomiserRunner(BaseRunner):
+    """Run benchmark with Exomiser web service."""
+
+    def __init__(self, base_url, algorithm, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #: Algorithm parameters.
+        self.algo_params = {
+            "hiphive": ("hiphive", ["human", "mouse", "fish", "ppi"]),
+            "hiphive-human": ("hiphive", ["human"]),
+            "hiphive-mouse": ("hiphive", ["human", "mouse"]),
+            "phenix": ("phenix", []),
+            "phive": ("phive", []),
+        }
+        valid_algos = list(self.algo_params.keys())
+        if algorithm not in valid_algos:
+            raise ValueError(f"Invalid algorithm {algorithm}, must be one of {valid_algos}")
+
+        #: URL of the exomiser server.
+        while base_url.endswith("/"):
+            base_url = base_url[:-1]
+        self.base_url = base_url
+        #: Algorithm to use.
+        self.algorithm = algorithm
+
+    def run_ranking(self, case: models.Case) -> typing.Optional[models.Result]:
+        gene_ids = [gene_id.replace("Entrez:", "") for gene_id in case.candidate_gene_ids or []]
+        gene_ids.append(case.disease_gene_id.replace("Entrez:", ""))
+
+        prio_algorithm, prio_params = self.algo_params[self.algorithm]
+        payload = {
+            "prioritiser": prio_algorithm,
+            "prioritiser-params": ",".join(prio_params),
+            "phenotypes": case.hpo_terms,
+            "genes": gene_ids,
+        }
+
+        url = f"{self.base_url}/exomiser/api/prioritise/"
+        response = requests.post(url, json=payload)
+
+        # Translate the gene symbols from the result to entrez ids.
+        result_entrez_ids = []
+        for entry in response.json()["results"]:
+            gene_id = entry["geneId"]
+            result_entrez_ids.append(f"Entrez:{gene_id}")
+
+        # Determine rank for case.
+        try:
+            rank = result_entrez_ids.index(case.disease_gene_id) + 1
+        except ValueError:
+            logger.error("Disease gene {} not found in results?", case.disease_gene_id)
+            return None
+
+        return models.Result(case=case, rank=rank, result_entrez_ids=result_entrez_ids)
