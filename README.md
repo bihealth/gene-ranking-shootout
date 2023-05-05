@@ -186,6 +186,57 @@ $ gene-ranking-shootout dataset convert-tsv input.tsv output.json
 The following was generated on 2023/05/05 with all 4714 cases.
 
 ```
-$ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize $f); echo; done
-TODO
+$ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize --bars-top-n 20 $f); echo; done
+TODO: MISSING - CADA
+TODO: MISSING - AMELIE
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 /tmp/result-phen2gene.json
+    1: 2426  ##################################
+    2:  470  ######
+    3:  209  ##
+    4:  125  #
+    5:  101  #
+    6:   67  .
+    7:   51  .
+    8:   62  .
+    9:   53  .
+   10:   41  .
+   11:   33  .
+   12:   37  .
+   13:   42  .
+   14:   33  .
+   15:   34  .
+   16:   28  .
+   17:   18  .
+   18:   29  .
+   19:   17  .
+   20:   19  .
+
+21-..:  763  ##########
+mssng:    0
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 /tmp/result-varfish-phenix.json
+    1: 1709  #######################
+    2:  616  ########
+    3:  357  ####
+    4:  277  ###
+    5:  184  ##
+    6:  152  ##
+    7:  131  #
+    8:  118  #
+    9:  105  #
+   10:   78  #
+   11:   71  .
+   12:   57  .
+   13:   67  .
+   14:   64  .
+   15:   67  .
+   16:   71  .
+   17:   56  .
+   18:   48  .
+   19:   34  .
+   20:   48  .
+
+21-..:  403  #####
+mssng:    0
 ```
