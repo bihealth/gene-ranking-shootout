@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.1.1](https://www.github.com/bihealth/gene-ranking-shootout/compare/v0.1.0...v0.1.1) (2023-05-05)
+
+
+### Build System
+
+* properly use git version with setuptools_scm ([#13](https://www.github.com/bihealth/gene-ranking-shootout/issues/13)) ([2434052](https://www.github.com/bihealth/gene-ranking-shootout/commit/243405280d799f0e62157ebc7baa62677cb4ecdc))
+
 ## 0.1.0 (2023-05-05)
 
 
