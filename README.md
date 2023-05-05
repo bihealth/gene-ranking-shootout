@@ -289,6 +289,31 @@ mssng:    0
 21-..:  165  ##
 mssng:    0  
 
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-phenix.json
+    1: 2566  ####################################
+    2:  619  ########
+    3:  306  ####
+    4:  208  ##
+    5:  152  ##
+    6:  119  #
+    7:   90  #
+    8:   80  #
+    9:   73  #
+   10:   64  .
+   11:   49  .
+   12:   41  .
+   13:   40  .
+   14:   26  .
+   15:   29  .
+   16:   27  .
+   17:   15  .
+   18:   17  .
+   19:   10  .
+   20:   16  .
+
+21-..:  149  ##
+mssng:    0  
+
 + gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-phive.json
     1:  934  #############
     2:  298  ####
