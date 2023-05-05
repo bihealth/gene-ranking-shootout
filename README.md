@@ -14,6 +14,10 @@ The following methods are currently included in the benchmark:
 - CADA (via custom Docker/Podman image)
 - Phen2Gene (via official Docker/Podman image)
 - Phenix algorithm (as implemented in VarFish)
+- Exomiser Algorithms:
+  - Phenix
+  - Phive
+  - HiPhive (variants: human only, human-mouse only, all human-mouse-fish-ppi)
 
 ## Installation
 
