@@ -1,3 +1,5 @@
+[![CI](https://github.com/bihealth/gene-ranking-shootout/actions/workflows/main.yml/badge.svg)](https://github.com/bihealth/gene-ranking-shootout/actions/workflows/main.yml)
+
 # Gene Ranking Shootout
 
 A benchmark for methods that rank genes according to their relevance for a given phenotype (list of HPO terms).
