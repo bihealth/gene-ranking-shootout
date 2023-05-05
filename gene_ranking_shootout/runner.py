@@ -35,7 +35,7 @@ class BarPrinter:
         missing = len([rank for rank in ranks if rank is None])
         counter = Counter(ranks)
         tot_width = self.total_width - 14
-        max_value = max(list(counter.values()) + [missing, above_bars_top_n])
+        max_value = len(results)
 
         def gen_bar(value):
             if max_value:
