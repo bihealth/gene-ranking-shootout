@@ -204,7 +204,7 @@ class Phen2GeneRunner(BaseRunner):
                 "/code/out/genes.txt",
             ]
             try:
-                subprocess.check_call(cmd, stderr=subprocess.STDOUT)
+                subprocess.check_output(cmd, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError:
                 logger.error("Error running phen2gene")
                 return None
@@ -307,7 +307,7 @@ class CadaRunner(BaseRunner):
                 "/data",
             ]
             try:
-                subprocess.check_call(cmd, stderr=subprocess.STDOUT)
+                subprocess.check_output(cmd, stderr=subprocess.STDOUT)
             except subprocess.CalledProcessError:
                 logger.error("Error running CADA")
                 return None
