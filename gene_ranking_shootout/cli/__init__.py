@@ -92,6 +92,20 @@ def cada(simulated_json, results_json, bars_top_n, total_width):
     )
 
 
+@benchmark.command()
+@click.option("--bars-top-n", default=10)
+@click.option("--total-width", default=80)
+@click.argument("base_url")
+@click.argument("algorithm")
+@click.argument("simulated_json")
+@click.argument("results_json")
+def exomiser(base_url, algorithm, simulated_json, results_json, bars_top_n, total_width):
+    """Benchmark the Exomiser REST Prioritizer."""
+    runner.ExomiserRunner(base_url, algorithm, bars_top_n=bars_top_n, total_width=total_width).run(
+        simulated_json, results_json
+    )
+
+
 @main.group()
 def dataset():
     """Group for dataset sub commands."""
@@ -185,12 +199,7 @@ def convert_tsv(tsv_in, json_out):
     with open(tsv_in, "rt") as inputf:
         with open(json_out, "wt") as outputf:
             cases = []
-            header = (
-                "name",
-                "disease_omim_id",
-                "disease_gene_id",
-                "hpo_terms",
-            )
+            header = ("name", "disease_omim_id", "disease_gene_id", "hpo_terms")
             reader = csv.reader(inputf, delimiter="\t")
             for row in reader:
                 if not row[0].startswith("Patient"):
@@ -212,11 +221,7 @@ def convert_tsv(tsv_in, json_out):
                     )
                 )
             logger.info("Writing {} cases", len(cases))
-            json.dump(
-                cattrs.unstructure(cases),
-                outputf,
-                indent=2,
-            )
+            json.dump(cattrs.unstructure(cases), outputf, indent=2)
 
 
 if __name__ == "__main__":

@@ -82,6 +82,11 @@ $ gene-ranking-shootout benchmark amelie /tmp/cases.json /tmp/result-amelie.json
 $ gene-ranking-shootout benchmark phen2gene /tmp/cases.json /tmp/result-phen2gene.json
 $ gene-ranking-shootout benchmark varfish-phenix http://127.0.0.1:8081/hpo/sim/term-gene /tmp/cases.json /tmp/result-varfish-phenix.json
 $ gene-ranking-shootout benchmark cada /tmp/cases.json /tmp/result-cada.json
+$ gene-ranking-shootout benchmark exomiser http://localhost:8081/ phenix /tmp/cases.json /tmp/result-exomiser-phenix.json
+$ gene-ranking-shootout benchmark exomiser http://localhost:8081/ phive /tmp/cases.json /tmp/result-exomiser-phive.json
+$ gene-ranking-shootout benchmark exomiser http://localhost:8081/ hiphive /tmp/cases.json /tmp/result-exomiser-hiphive.json
+$ gene-ranking-shootout benchmark exomiser http://localhost:8081/ hiphive-mouse /tmp/cases.json /tmp/result-exomiser-hiphive-mouse.json
+$ gene-ranking-shootout benchmark exomiser http://localhost:8081/ hiphive-human /tmp/cases.json /tmp/result-exomiser-hiphive-human.json
 ```
 
 You can also visualize the details of the benchmark results for each result file (below for 100 cases).
@@ -122,6 +127,28 @@ Then, run the following in the background.
 
 ```bash
 $ varfish-server-worker server pheno --path-hpo-dir path/to/varfish-server-worker-db/hpo
+```
+
+## Running Exomiser
+
+The following are more rough notes than a full manual.
+This uses the current Exomiser RES API version 13.2.0 (current at: 2023-05-05).
+You will need approximately 75GB of storage for download and extraction and afterwards 49GB.
+Probably one could get rid of a lot of the variant-specific data but I did not go into detail here.
+
+```bash
+$ wget https://github.com/exomiser/Exomiser/releases/download/13.2.0/exomiser-rest-prioritiser-13.2.0.jar
+$ wget https://data.monarchinitiative.org/exomiser/latest/2302_phenotype.zip
+$ wget https://data.monarchinitiative.org/exomiser/latest/2302_hg19.zip
+$ unzip 2302_phenotype.zip
+$ unzip 2302_hg19.zip
+$ cat <<EOF > application.properties
+exomiser.data-directory=$PWD
+exomiser.hg19.data-version=1909
+exomiser.phenotype.data-version=2302
+exomiser.phenotype.random-walk-file-name=rw_string_10.mv
+EOF
+$ java -Xmx6G -Xms2G -Dserver.address=0.0.0.0 -Dserver.port=8081 -jar exomiser-rest-prioritiser-13.2.0.jar
 ```
 
 ## Datasets
