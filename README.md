@@ -28,7 +28,12 @@ List datasets in the benchmark:
 
 ```bash
 $ gene-ranking-shootout dataset list
+cada_clinvar_cases
 cada_cases_test
+cada_cases_validate
+cada_all_cases
+cada_collaborator_cases
+cada_cases_train
 ```
 
 Show the first entry in a dataset:
@@ -39,16 +44,22 @@ $ gene-ranking-shootout dataset head cada_cases_test --count 2
 {"name": "Patient:SCV000864231", "disease_omim_id": "OMIM:132900", "disease_gene_id": "Entrez:4629", "hpo_terms": ["HP:0011499", "HP:0000021"], "candidate_gene_ids": null}
 ```
 
-Simulate cases based on a dataset.
-This will pick a number of cases from the dataset.
+Simulate cases based on one or more datasets.
+This will pick a number of cases from the datasets.
 Further, it will pick another number of random genes based on the number of rare variants (freq below 0.1% in gnomAD genomes).
 The results are written into a JSON file with the cases.
+The simulation is randomized with a fixed seed that can be adjusted on the command line if necessary.
 
 ```bash
-$ gene-ranking-shootout dataset simulate cada_cases_test \
+$ gene-ranking-shootout dataset simulate \
     /tmp/cases.json \
-    --case-count 100 \
+    $(gene-ranking-shootout dataset list) \
+    --case-count 4714 \
     --candidate-genes-count 100
+2023-05-05 11:16:35 | INFO   | Loading data
+2023-05-05 11:16:35 | INFO   | ... 4714 cases overall (9428 duplicates)
+2023-05-05 11:16:35 | INFO   | Simulating cases
+2023-05-05 11:16:37 | INFO   | Wrote 4714 cases
 ```
 
 You can then run the benchmark on the cases with the different methods:
@@ -73,11 +84,10 @@ $ gene-ranking-shootout benchmark varfish-phenix http://127.0.0.1:8081/hpo/sim/t
 $ gene-ranking-shootout benchmark cada /tmp/cases.json /tmp/result-cada.json
 ```
 
-You can also visualize the details of the benchmark results for each result file.
+You can also visualize the details of the benchmark results for each result file (below for 100 cases).
 
 ```bash
-$ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize $f); echo; done
-+ gene-ranking-shootout benchmark summarize /tmp/result-amelie.json
+$ gene-ranking-shootout benchmark summarize /tmp/result-amelie.json
     1:   48  ################################
     2:   17  ###########
     3:    7  ####
@@ -90,50 +100,6 @@ $ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summa
    10:    0  
 
 11-..:    9  ######
-mssng:    0  
-
-+ gene-ranking-shootout benchmark summarize /tmp/result-cada.json
-    1:   17  ###########
-    2:    6  ###
-    3:    2  #
-    4:    4  ##
-    5:    3  #
-    6:    5  ###
-    7:    3  #
-    8:    0  
-    9:    0  
-   10:    2  #
-
-11-..:   58  ######################################
-mssng:    0  
-
-+ gene-ranking-shootout benchmark summarize /tmp/result-phen2gene.json
-    1:   57  #####################################
-    2:    6  ###
-    3:    4  ##
-    4:    2  #
-    5:    2  #
-    6:    3  #
-    7:    4  ##
-    8:    0  
-    9:    3  #
-   10:    0  
-
-11-..:   19  ############
-mssng:    0  
-+ gene-ranking-shootout benchmark summarize /tmp/result-varfish-phenix.json
-    1:   39  #########################
-    2:   10  ######
-    3:    7  ####
-    4:    4  ##
-    5:    2  #
-    6:    2  #
-    7:    1  .
-    8:    1  .
-    9:    5  ###
-   10:    4  ##
-
-11-..:   25  ################
 mssng:    0  
 ```
 
@@ -157,3 +123,32 @@ Then, run the following in the background.
 ```bash
 $ varfish-server-worker server pheno --path-hpo-dir path/to/varfish-server-worker-db/hpo
 ```
+
+## Datasets
+
+The following datasets are included at the moment:
+
+- `cada_cases_test.json` - converte from CADA's `cases_test.tsv`
+- `cada_cases_train.json` - converte from CADA's `cases_train.tsv`
+- `cada_cases_validate.json` - converte from CADA's `cases_validate.tsv`
+- `cada_clinvar_cases.json` - converte from CADA's `clinvar_cases.tsv`
+- `cada_collaborator_cases.json` - converte from CADA's `collaborator_cases.tsv`
+
+You can conver TSV files with the following structure with `gene-ranking-shootout dataset convert-tsv`.
+
+- Column 1: name for the case; must start with `Patient:` or is ignored.
+- Column 2: disease_omim_id; as `OMIM:123456` or `unknown`
+- Column 3: disease_gene_id; as `Entrez:123456`
+- Column 4: hpo_terms; as semicolon-separated list, e.g., `HP:0001234;HP:0005678`
+
+If a row has less than 4 columns, we assume that column 2 is missing.
+All further columns are ignored.
+The file should not have a header.
+You can find some files in the CADA repository here:
+
+- https://github.com/Chengyao-Peng/CADA/tree/main/src/CADA
+
+The call to `gene-ranking-shootout dataset convert-tsv` should be as follows.
+
+```bash
+$ gene-ranking-shootout dataset convert-tsv input.tsv output.json

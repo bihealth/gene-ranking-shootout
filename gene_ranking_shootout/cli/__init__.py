@@ -3,6 +3,7 @@
 import csv
 import json
 import pathlib
+import sys
 import typing
 
 import attrs
@@ -17,6 +18,13 @@ from gene_ranking_shootout import models, runner
 @click.group()
 def main():
     """Main entry point for the CLI interface"""
+    logger.remove()
+    fmt = (
+        "<green>{time:YYYY-MM-DD HH:mm:ss}</green> | "
+        "<level>{level: <6}</level> | "
+        "<level>{message}</level>"
+    )
+    logger.add(sys.stderr, format=fmt)
 
 
 @main.group()
@@ -115,17 +123,26 @@ def head(dataset, count):
 
 
 @dataset.command()
-@click.argument("dataset")
 @click.argument("out_json")
+@click.argument("datasets", nargs=-1)
 @click.option("--seed", default=42)
 @click.option("--case-count", default=10)
 @click.option("--candidate-genes-count", default=19)
-def simulate(dataset, out_json, case_count, candidate_genes_count, seed):
+def simulate(out_json, datasets, case_count, candidate_genes_count, seed):
     """Simulate cases based on the dataset file."""
     # Load dataset and all genes from ``gnomad_counts.tsv``.
     logger.info("Loading data")
-    cases = load_dataset(dataset)
-    logger.info("... {} cases overall", len(cases))
+    cases = []
+    skipped = 0
+    seen_case_names = set()
+    for dataset in datasets:
+        for case in load_dataset(dataset):
+            if case.name in seen_case_names:
+                skipped += 1
+                continue
+            cases.append(case)
+            seen_case_names.add(case.name)
+    logger.info("... {} cases overall ({} duplicates)", len(cases), skipped)
     gnomad_counts = models.load_gnomad_counts()
     gnomad_counts_idx = np.array(range(len(gnomad_counts)))
     gnomad_counts_values = np.array([gene.count for gene in gnomad_counts]).astype(np.float64)
@@ -176,11 +193,20 @@ def convert_tsv(tsv_in, json_out):
             )
             reader = csv.reader(inputf, delimiter="\t")
             for row in reader:
-                data = dict(zip(header, row))
+                if not row[0].startswith("Patient"):
+                    logger.info("Skipping row {}; does not start with 'Patient:'", row)
+                    continue
+                elif len(row) < 3:
+                    logger.info("Skipping row {}; not enough columns", row)
+                    continue
+                if len(row) == 3:
+                    data = dict(zip(header[:1] + header[2:], row))
+                else:
+                    data = dict(zip(header, row))
                 cases.append(
                     models.Case(
                         name=str(data["name"]),
-                        disease_omim_id=str(data["disease_omim_id"]),
+                        disease_omim_id=str(data.get("disease_omim_id", "unknown")),
                         disease_gene_id=str(data["disease_gene_id"]),
                         hpo_terms=[str(term) for term in data["hpo_terms"].split(",")],
                     )
