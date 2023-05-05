@@ -189,6 +189,31 @@ The following was generated on 2023/05/05 with all 4714 cases.
 
 ```
 $ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize --bars-top-n 20 $f); echo; done
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-cada.json
+    1: 1340  ##################
+    2:  290  ####
+    3:  192  ##
+    4:  164  ##
+    5:   96  #
+    6:   84  #
+    7:   94  #
+    8:   59  .
+    9:   63  .
+   10:   40  .
+   11:   62  .
+   12:   47  .
+   13:   33  .
+   14:   43  .
+   15:   38  .
+   16:   42  .
+   17:   36  .
+   18:   16  .
+   19:   30  .
+   20:   22  .
+
+21-..: 1923  ##########################
+mssng:    0  
+
 + gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive-human.json
     1: 2593  ####################################
     2:  637  ########
