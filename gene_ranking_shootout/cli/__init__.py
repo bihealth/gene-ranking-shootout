@@ -54,8 +54,20 @@ def varfish_phenix(base_url, simulated_json, results_json, bars_top_n, total_wid
 @click.argument("simulated_json")
 @click.argument("results_json")
 def phen2gene(simulated_json, results_json, bars_top_n, total_width):
-    """Benchmark the Phen2Gene algorithm."""
+    """Benchmark the Phen2Gene container."""
     runner.Phen2GeneRunner(bars_top_n=bars_top_n, total_width=total_width).run(
+        simulated_json, results_json
+    )
+
+
+@benchmark.command()
+@click.option("--bars-top-n", default=10)
+@click.option("--total-width", default=80)
+@click.argument("simulated_json")
+@click.argument("results_json")
+def amelie(simulated_json, results_json, bars_top_n, total_width):
+    """Benchmark the AMELIE web server."""
+    runner.AmelieRunner(bars_top_n=bars_top_n, total_width=total_width).run(
         simulated_json, results_json
     )
 

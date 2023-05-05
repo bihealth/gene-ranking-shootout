@@ -149,7 +149,7 @@ class PhenixVarFishRunner(BaseRunner):
         try:
             rank = result_entrez_ids.index(case.disease_gene_id) + 1
         except ValueError:
-            logger.error("Disease gene {} not found in resutls?", case.disease_gene_id)
+            logger.error("Disease gene {} not found in results?", case.disease_gene_id)
             return None
 
         return models.Result(
@@ -217,7 +217,51 @@ class Phen2GeneRunner(BaseRunner):
         try:
             rank = result_entrez_ids.index(case.disease_gene_id) + 1
         except ValueError:
-            logger.error("Disease gene {} not found in resutls?", case.disease_gene_id)
+            logger.error("Disease gene {} not found in results?", case.disease_gene_id)
+            return None
+
+        return models.Result(
+            case=case,
+            rank=rank,
+            result_entrez_ids=result_entrez_ids,
+        )
+
+
+class AmelieRunner(BaseRunner):
+    """Run benchmark with AMELIE web service."""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #: URL of the AMELIE API.
+        self.api_url = "https://amelie.stanford.edu/api/gene_list_api/"
+
+    def run_ranking(self, case: models.Case) -> typing.Optional[models.Result]:
+        gene_symbols = [self.entrez_to_symbol[gene_id] for gene_id in case.candidate_gene_ids or []]
+        disease_gene_symbol = self.entrez_to_symbol.get(case.disease_gene_id)
+        if not disease_gene_symbol:
+            logger.warning("Disease gene {} not found in gnomAD data", case.disease_gene_id)
+            return None
+        else:
+            gene_symbols.append(disease_gene_symbol)
+
+        payload = {
+            "patientName": "query",
+            "phenotypes": ",".join(case.hpo_terms),
+            "genes": ",".join(gene_symbols),
+        }
+
+        response = requests.post(self.api_url, data=payload)
+
+        # Translate the gene symbols from the result to entrez ids.
+        result_entrez_ids = []
+        for row in response.json():
+            result_entrez_ids.append(self.symbol_to_entrez[row[0]])
+
+        # Determine rank for case.
+        try:
+            rank = result_entrez_ids.index(case.disease_gene_id) + 1
+        except ValueError:
+            logger.error("Disease gene {} not found in results?", case.disease_gene_id)
             return None
 
         return models.Result(
