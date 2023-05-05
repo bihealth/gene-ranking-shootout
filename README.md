@@ -1,5 +1,5 @@
 [![CI](https://github.com/bihealth/gene-ranking-shootout/actions/workflows/main.yml/badge.svg)](https://github.com/bihealth/gene-ranking-shootout/actions/workflows/main.yml)
-[![Pypi Package Version](https://img.shields.io/pypi/v/gene-ranking-shootout.svg)](https://pypi.org/v/gene-ranking-shootout)
+[![Pypi Package Version](https://img.shields.io/pypi/v/gene-ranking-shootout.svg)](https://pypi.org/project/gene-ranking-shootout)
 [![Pypi Python Version](https://img.shields.io/pypi/pyversions/gene-ranking-shootout.svg)](https://pypi.org/project/gene-ranking-shootout)
 
 # Gene Ranking Shootout
