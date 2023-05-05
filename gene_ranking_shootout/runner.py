@@ -1,8 +1,11 @@
 """Code for running the benchmark."""
 
 from collections import Counter
+import csv
 import json
+import subprocess
 import sys
+import tempfile
 import typing
 
 import cattrs
@@ -57,7 +60,9 @@ class BarPrinter:
 class BaseRunner:
     """Base class for the runners."""
 
-    def __init__(self, *, bars_top_n=10):
+    def __init__(self, *, total_width=80, bars_top_n=10):
+        #: The total display width.
+        self.total_width = total_width
         #: The number of top genes to print bars for.
         self.bars_top_n = bars_top_n
 
@@ -140,6 +145,74 @@ class PhenixVarFishRunner(BaseRunner):
         result_entrez_ids = []
         for result_entry in result_container["result"]:
             result_entrez_ids.append(self.symbol_to_entrez[result_entry["gene_symbol"]])
+        # Determine rank for case.
+        try:
+            rank = result_entrez_ids.index(case.disease_gene_id) + 1
+        except ValueError:
+            logger.error("Disease gene {} not found in resutls?", case.disease_gene_id)
+            return None
+
+        return models.Result(
+            case=case,
+            rank=rank,
+            result_entrez_ids=result_entrez_ids,
+        )
+
+
+class Phen2GeneRunner(BaseRunner):
+    """Run benchmark for phen2gene.
+
+    The benchmark is run through podman so the shootout must be installed with the option
+    [phen2gene] to enable installation of podman.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        #: The name ofthe image to use via podman.
+        self.image_name = "docker.io/genomicslab/phen2gene"
+
+    def run_ranking(self, case: models.Case) -> typing.Optional[models.Result]:
+        # Prepare list of all gene symbols.
+        gene_symbols = [self.entrez_to_symbol[gene_id] for gene_id in case.candidate_gene_ids or []]
+        gene_symbols.append(self.entrez_to_symbol[case.disease_gene_id])
+
+        # Resulting entrez ids are collected here.
+        result_entrez_ids = []
+
+        # Run phen2gene with temporary directory.
+        with tempfile.TemporaryDirectory() as tmpdir:
+            # Write terms and genes to files.
+            with open(f"{tmpdir}/terms.txt", "wt") as outf:
+                outf.write("\n".join(case.hpo_terms))
+            with open(f"{tmpdir}/genes.txt", "wt") as outf:
+                outf.write("\n".join(gene_symbols))
+            # Run phen2gene using podman.
+            cmd = [
+                "podman",
+                "run",
+                "--rm",
+                "-v",
+                f"{tmpdir}:/code/out",
+                "-t",
+                self.image_name,
+                "-f",
+                "/code/out/terms.txt",
+                "-l",
+                "/code/out/genes.txt",
+            ]
+            try:
+                output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            except subprocess.CalledProcessError:
+                logger.error("Error running phen2gene:\n{}", output.decode("utf-8"))
+                return None
+
+            # Read the output file.
+            with open(f"{tmpdir}/output_file.associated_gene_list") as inputf:
+                reader = csv.DictReader(inputf, delimiter="\t")
+                # Translate the gene symbols from the result to entrez ids.
+                for row in reader:
+                    result_entrez_ids.append(self.symbol_to_entrez[row["Gene"]])
+
         # Determine rank for case.
         try:
             rank = result_entrez_ids.index(case.disease_gene_id) + 1

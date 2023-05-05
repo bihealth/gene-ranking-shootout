@@ -11,8 +11,7 @@ import click
 from loguru import logger
 import numpy as np
 
-from gene_ranking_shootout import models
-from gene_ranking_shootout.runner import BarPrinter, PhenixVarFishRunner
+from gene_ranking_shootout import models, runner
 
 
 @click.group()
@@ -33,7 +32,7 @@ def summarize(results_json, bars_top_n, total_width):
     """Summarize the results."""
     with open(results_json, "rt") as inf:
         results = cattrs.structure(json.load(inf), typing.List[models.Result])
-    BarPrinter(bars_top_n=bars_top_n, total_width=total_width).print(results)
+    runner.BarPrinter(bars_top_n=bars_top_n, total_width=total_width).print(results)
 
 
 @benchmark.command()
@@ -44,7 +43,19 @@ def summarize(results_json, bars_top_n, total_width):
 @click.argument("results_json")
 def varfish_phenix(base_url, simulated_json, results_json, bars_top_n, total_width):
     """Benchmark the VarFish implementation of the Phenix algorithm."""
-    PhenixVarFishRunner(base_url, bars_top_n=bars_top_n, total_width=total_width).run(
+    runner.PhenixVarFishRunner(base_url, bars_top_n=bars_top_n, total_width=total_width).run(
+        simulated_json, results_json
+    )
+
+
+@benchmark.command()
+@click.option("--bars-top-n", default=10)
+@click.option("--total-width", default=80)
+@click.argument("simulated_json")
+@click.argument("results_json")
+def phen2gene(simulated_json, results_json, bars_top_n, total_width):
+    """Benchmark the Phen2Gene algorithm."""
+    runner.Phen2GeneRunner(bars_top_n=bars_top_n, total_width=total_width).run(
         simulated_json, results_json
     )
 
