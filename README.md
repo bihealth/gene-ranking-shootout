@@ -1,3 +1,5 @@
+[![CI](https://github.com/bihealth/gene-ranking-shootout/actions/workflows/main.yml/badge.svg)](https://github.com/bihealth/gene-ranking-shootout/actions/workflows/main.yml)
+
 # Gene Ranking Shootout
 
 A benchmark for methods that rank genes according to their relevance for a given phenotype (list of HPO terms).
@@ -179,3 +181,211 @@ The call to `gene-ranking-shootout dataset convert-tsv` should be as follows.
 
 ```bash
 $ gene-ranking-shootout dataset convert-tsv input.tsv output.json
+```
+
+## Some Preliminary Results
+
+The following was generated on 2023/05/05 with all 4714 cases.
+
+```
+$ for f in /tmp/result-*.json; do (set -x; gene-ranking-shootout benchmark summarize --bars-top-n 20 $f); echo; done
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-cada.json
+    1: 1340  ##################
+    2:  290  ####
+    3:  192  ##
+    4:  164  ##
+    5:   96  #
+    6:   84  #
+    7:   94  #
+    8:   59  .
+    9:   63  .
+   10:   40  .
+   11:   62  .
+   12:   47  .
+   13:   33  .
+   14:   43  .
+   15:   38  .
+   16:   42  .
+   17:   36  .
+   18:   16  .
+   19:   30  .
+   20:   22  .
+
+21-..: 1923  ##########################
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive-human.json
+    1: 2593  ####################################
+    2:  637  ########
+    3:  375  #####
+    4:  203  ##
+    5:  132  #
+    6:  104  #
+    7:   99  #
+    8:   80  #
+    9:   61  .
+   10:   46  .
+   11:   44  .
+   12:   30  .
+   13:   30  .
+   14:   30  .
+   15:   15  .
+   16:   22  .
+   17:   12  .
+   18:   11  .
+   19:   13  .
+   20:   10  .
+
+21-..:  149  ##
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive.json
+    1: 2418  #################################
+    2:  686  #########
+    3:  355  ####
+    4:  226  ###
+    5:  155  ##
+    6:  122  #
+    7:   86  #
+    8:   95  #
+    9:   54  .
+   10:   54  .
+   11:   52  .
+   12:   28  .
+   13:   29  .
+   14:   27  .
+   15:   16  .
+   16:   11  .
+   17:   23  .
+   18:    9  .
+   19:   10  .
+   20:   14  .
+
+21-..:  226  ###
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-hiphive-mouse.json
+    1: 2418  #################################
+    2:  685  #########
+    3:  357  #####
+    4:  227  ###
+    5:  160  ##
+    6:  121  #
+    7:   90  #
+    8:   96  #
+    9:   55  .
+   10:   56  .
+   11:   58  .
+   12:   37  .
+   13:   31  .
+   14:   26  .
+   15:   22  .
+   16:   18  .
+   17:   26  .
+   18:   19  .
+   19:   14  .
+   20:   15  .
+
+21-..:  165  ##
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-phenix.json
+    1: 2566  ####################################
+    2:  619  ########
+    3:  306  ####
+    4:  208  ##
+    5:  152  ##
+    6:  119  #
+    7:   90  #
+    8:   80  #
+    9:   73  #
+   10:   64  .
+   11:   49  .
+   12:   41  .
+   13:   40  .
+   14:   26  .
+   15:   29  .
+   16:   27  .
+   17:   15  .
+   18:   17  .
+   19:   10  .
+   20:   16  .
+
+21-..:  149  ##
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-exomiser-phive.json
+    1:  934  #############
+    2:  298  ####
+    3:  163  ##
+    4:  101  #
+    5:   50  .
+    6:   44  .
+    7:   30  .
+    8:   33  .
+    9:   16  .
+   10:   16  .
+   11:   10  .
+   12:    9  .
+   13:   17  .
+   14:   13  .
+   15:   12  .
+   16:   16  .
+   17:   14  .
+   18:   23  .
+   19:   28  .
+   20:   33  .
+
+21-..: 2836  #######################################
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-phen2gene.json
+    1: 2426  ##################################
+    2:  470  ######
+    3:  209  ##
+    4:  125  #
+    5:  101  #
+    6:   67  .
+    7:   51  .
+    8:   62  .
+    9:   53  .
+   10:   41  .
+   11:   33  .
+   12:   37  .
+   13:   42  .
+   14:   33  .
+   15:   34  .
+   16:   28  .
+   17:   18  .
+   18:   29  .
+   19:   17  .
+   20:   19  .
+
+21-..:  763  ##########
+mssng:    0  
+
++ gene-ranking-shootout benchmark summarize --bars-top-n 20 result-varfish-phenix.json
+    1: 1709  #######################
+    2:  616  ########
+    3:  357  ####
+    4:  277  ###
+    5:  184  ##
+    6:  152  ##
+    7:  131  #
+    8:  118  #
+    9:  105  #
+   10:   78  #
+   11:   71  .
+   12:   57  .
+   13:   67  .
+   14:   64  .
+   15:   67  .
+   16:   71  .
+   17:   56  .
+   18:   48  .
+   19:   34  .
+   20:   48  .
+
+21-..:  403  #####
+mssng:    0  
+```

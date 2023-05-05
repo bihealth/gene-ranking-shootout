@@ -245,7 +245,12 @@ class AmelieRunner(BaseRunner):
 
         # Translate the gene symbols from the result to entrez ids.
         result_entrez_ids = []
-        for row in response.json():
+        try:
+            response_json = response.json()
+        except json.JSONDecodeError:
+            logger.error("Error decoding JSON response: {}", response.text)
+            return None
+        for row in response_json:
             result_entrez_ids.append(self.symbol_to_entrez[row[0]])
 
         # Determine rank for case.
