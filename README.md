@@ -97,7 +97,7 @@ $ gene-ranking-shootout benchmark exomiser http://localhost:8081/ hiphive-mouse 
 $ gene-ranking-shootout benchmark exomiser http://localhost:8081/ hiphive-human /tmp/cases.json /tmp/result-exomiser-hiphive-human.json
 ```
 
-You can also visualize the details of the benchmark results for each result file (below for 100 cases).
+You can also visualize the details of the benchmark results for each result file (below for 100 cases). This visualization displays the number of true disease genes (from case set definitions) at TOP10 and following positions in the ranked gene list of the respective method.
 
 ```bash
 $ gene-ranking-shootout benchmark summarize /tmp/result-amelie.json
