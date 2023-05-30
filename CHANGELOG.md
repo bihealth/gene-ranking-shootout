@@ -1,5 +1,18 @@
 # Changelog
 
+### [0.1.3](https://www.github.com/bihealth/gene-ranking-shootout/compare/v0.1.2...v0.1.3) (2023-05-30)
+
+
+### Bug Fixes
+
+* filter CADA results to candidate gene IDs ([#22](https://www.github.com/bihealth/gene-ranking-shootout/issues/22)) ([#23](https://www.github.com/bihealth/gene-ranking-shootout/issues/23)) ([eb65c72](https://www.github.com/bihealth/gene-ranking-shootout/commit/eb65c72f22ee8fc0632e6e5416edfacf58736482))
+
+
+### Documentation
+
+* adding new methods to README ([#18](https://www.github.com/bihealth/gene-ranking-shootout/issues/18)) ([8e5c82d](https://www.github.com/bihealth/gene-ranking-shootout/commit/8e5c82dfae243ef7f4ecf2aea4cf2e1b0ad9964f))
+* Update README.md with details on 'benchmark summarize' output ([#21](https://www.github.com/bihealth/gene-ranking-shootout/issues/21)) ([3904c92](https://www.github.com/bihealth/gene-ranking-shootout/commit/3904c92349f4f1a84af3d28c6cdb0a35cbde6b25))
+
 ### [0.1.2](https://www.github.com/bihealth/gene-ranking-shootout/compare/v0.1.1...v0.1.2) (2023-05-05)
 
 
