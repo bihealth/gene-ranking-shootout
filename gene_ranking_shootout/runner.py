@@ -301,12 +301,19 @@ class CadaRunner(BaseRunner):
                 logger.error("Error running CADA")
                 return None
 
+            # Get the gene IDs to consider at all.
+            candidate_gene_ids = set(case.candidate_gene_ids or [])
+
             # Read the output file.
             with open(f"{tmpdir}/result.txt", "rt") as inputf:
                 reader = csv.DictReader(inputf, delimiter="\t")
                 # Translate the gene symbols from the result to entrez ids.
                 for row in reader:
-                    result_entrez_ids.append(row["gene_id"])
+                    if (
+                        row["gene_id"] == case.disease_gene_id
+                        or row["gene_id"] in candidate_gene_ids
+                    ):
+                        result_entrez_ids.append(row["gene_id"])
 
         # Determine rank for case.
         try:
