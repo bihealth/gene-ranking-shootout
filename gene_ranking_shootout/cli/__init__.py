@@ -83,11 +83,12 @@ def amelie(simulated_json, results_json, bars_top_n, total_width):
 @benchmark.command()
 @click.option("--bars-top-n", default=10)
 @click.option("--total-width", default=80)
+@click.option("--threads", default=0)
 @click.argument("simulated_json")
 @click.argument("results_json")
-def cada(simulated_json, results_json, bars_top_n, total_width):
+def cada(simulated_json, results_json, bars_top_n, total_width, threads):
     """Benchmark the CADA container."""
-    runner.CadaRunner(bars_top_n=bars_top_n, total_width=total_width).run(
+    runner.CadaRunner(bars_top_n=bars_top_n, total_width=total_width, threads=threads).run(
         simulated_json, results_json
     )
 

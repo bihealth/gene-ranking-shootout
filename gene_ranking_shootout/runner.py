@@ -3,6 +3,7 @@
 from collections import Counter
 import csv
 import json
+import multiprocessing
 import subprocess
 import sys
 import tempfile
@@ -63,11 +64,13 @@ class BarPrinter:
 class BaseRunner:
     """Base class for the runners."""
 
-    def __init__(self, *, total_width=80, bars_top_n=10):
+    def __init__(self, *, total_width=80, bars_top_n=10, threads=0):
         #: The total display width.
         self.total_width = total_width
         #: The number of top genes to print bars for.
         self.bars_top_n = bars_top_n
+        #: The number of threads to use.
+        self.threads = threads
 
         logger.info("Loading data ...")
         #: The gnomAD counts.
@@ -85,11 +88,15 @@ class BaseRunner:
         logger.info("... done loading {} cases", len(cases))
 
         logger.info("Running benchmark ...")
-        results = []
-        for case in tqdm.tqdm(cases):
-            result = self.run_ranking(case)
-            if result is not None:
-                results.append(result)
+        if self.threads:
+            with multiprocessing.Pool(self.threads) as pool:
+                results = [x for x in tqdm.tqdm(pool.imap(self._run, cases), total=len(cases)) if x]
+        else:
+            results = []
+            for case in tqdm.tqdm(cases):
+                result = self.run_ranking(case)
+                if result is not None:
+                    results.append(result)
         logger.info("... done running benchmark")
 
         logger.info("Writing results ...")
@@ -100,6 +107,18 @@ class BaseRunner:
         logger.info("Displaying results overview ...")
         self.print_bars(results)
         logger.info("All done. Have a nice day!")
+
+    def _run(self, case: models.Case) -> typing.Optional[models.Result]:
+        """Run the ranking for the given case.
+
+        :param case: The case to run the ranking for.
+        :returns: result for the case or ``None`` if no result was found.
+        """
+        try:
+            return self.run_ranking(case)
+        except Exception:
+            logger.exception("Error running case {}", case.name)
+            return None
 
     def run_ranking(self, case: models.Case) -> typing.Optional[models.Result]:
         """Run the ranking for the given case.
